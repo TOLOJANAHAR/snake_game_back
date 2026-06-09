@@ -72,7 +72,7 @@ app.include_router(levels_router)
 
 @app.get("/", tags=["Health"])
 def root():
-    return {"status": "ok", "message": "Snake Évolution API is running 🐍"}
+    return {"status": "ok", "message": "Snake Évolution API is running"}
 
 
 @app.get("/health", tags=["Health"])
