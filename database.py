@@ -6,7 +6,7 @@ DATABASE_URL = "sqlite:///./snake_evolution.db"
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}  # SQLite specific
+    connect_args={"check_same_thread": False} 
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -15,7 +15,6 @@ Base = declarative_base()
 
 
 def get_db():
-    """Dependency: fournit une session DB et la ferme après usage."""
     db = SessionLocal()
     try:
         yield db
@@ -24,6 +23,5 @@ def get_db():
 
 
 def init_db():
-    """Crée toutes les tables si elles n'existent pas encore."""
-    from app.models import score, player, level  # noqa: F401
+    from app.models import score, player, level 
     Base.metadata.create_all(bind=engine)

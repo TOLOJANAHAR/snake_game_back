@@ -1,10 +1,3 @@
-"""
-main.py
-Point d'entrée de l'application FastAPI — Snake Évolution Backend.
-
-Démarrage :
-    uvicorn app.main:app --reload --port 8000
-"""
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -16,20 +9,11 @@ from app.services.level_generator import get_or_generate
 from app.models.level import Level
 
 
-# ─── Lifespan : init DB + seed des 10 premiers niveaux ────────────────────
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Exécuté au démarrage du serveur :
-      1. Crée les tables SQLite si elles n'existent pas.
-      2. Pré-génère les 10 premiers niveaux pour éviter
-         la latence de génération lors de la première requête.
-    """
     init_db()
     _seed_initial_levels()
     yield
-    # (optionnel) cleanup au shutdown
 
 
 def _seed_initial_levels():
@@ -55,7 +39,6 @@ def _seed_initial_levels():
         db.close()
 
 
-# ─── Application ──────────────────────────────────────────────────────────
 
 app = FastAPI(
     title="Snake Évolution — API",
@@ -68,7 +51,6 @@ app = FastAPI(
 )
 
 
-# ─── CORS (dev : tout autoriser, prod : restreindre à l'origine React) ─────
 
 app.add_middleware(
     CORSMiddleware,
@@ -79,14 +61,14 @@ app.add_middleware(
 )
 
 
-# ─── Routers ──────────────────────────────────────────────────────────────
+#Routers 
 
 app.include_router(players_router)
 app.include_router(scores_router)
 app.include_router(levels_router)
 
 
-# ─── Routes utilitaires ───────────────────────────────────────────────────
+#Routes utilitaires 
 
 @app.get("/", tags=["Health"])
 def root():

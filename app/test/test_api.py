@@ -1,11 +1,7 @@
-"""
-tests/test_api.py
-Tests d'intégration des endpoints REST.
-"""
 import pytest
 
 
-# ─── Health ───────────────────────────────────────────────────────────────
+# Health
 
 def test_root(client):
     r = client.get("/")
@@ -17,7 +13,7 @@ def test_health(client):
     assert r.status_code == 200
 
 
-# ─── Players ──────────────────────────────────────────────────────────────
+# Players 
 
 def test_create_player(client):
     r = client.post("/players/", json={"username": "neo"})
@@ -65,7 +61,7 @@ def test_delete_player(client):
     assert r3.status_code == 404
 
 
-# ─── Scores ───────────────────────────────────────────────────────────────
+#Scores 
 
 def _create_player(client, username):
     return client.post("/players/", json={"username": username}).json()["id"]
@@ -131,21 +127,21 @@ def test_scores_by_player(client):
     assert len(r.json()) == 3
 
 
-# ─── Levels ───────────────────────────────────────────────────────────────
+#Levels
 
 def test_get_level_1(client):
     r = client.get("/levels/1")
     assert r.status_code == 200
     data = r.json()
     assert data["number"] == 1
-    assert data["obstacles"] == []   # niveau 1 = pas d'obstacles
+    assert data["obstacles"] == []  
 
 def test_get_level_5(client):
     r = client.get("/levels/5")
     assert r.status_code == 200
     data = r.json()
     assert data["number"] == 5
-    assert data["base_speed_ms"] < 200   # plus rapide que niveau 1
+    assert data["base_speed_ms"] < 200  
 
 def test_get_level_invalid(client):
     r = client.get("/levels/0")

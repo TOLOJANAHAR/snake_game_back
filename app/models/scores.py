@@ -14,15 +14,14 @@ class Score(Base):
     snake_length = Column(Integer, nullable=False, default=3)
     duration_seconds = Column(Float, nullable=False, default=0.0)
 
-    # Puissance atteinte : "larve" | "serpent" | "dragon"
+    # Puissance atteinte
     evolution_stage = Column(String(20), nullable=False, default="larve")
 
     # Cause du game over
-    death_cause = Column(String(30), nullable=True)  # "wall" | "self" | "skull" | None
+    death_cause = Column(String(30), nullable=True) 
 
     played_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relations
     player = relationship("Player", back_populates="scores")
 
     def __repr__(self):

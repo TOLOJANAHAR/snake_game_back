@@ -12,16 +12,16 @@ class Level(Base):
     grid_width = Column(Integer, nullable=False, default=20)
     grid_height = Column(Integer, nullable=False, default=20)
 
-    # Obstacles : liste de {"x": int, "y": int}
+    # Obstacles
     obstacles = Column(JSON, nullable=False, default=list)
 
-    # Config de vitesse (ms entre chaque tick)
+    # Config de vitesse
     base_speed_ms = Column(Integer, nullable=False, default=200)
 
     # Nombre de food items simultanés sur la grille
     food_count = Column(Integer, nullable=False, default=1)
 
-    # Probabilités d'apparition de chaque food (somme = 1.0)
+    # Probabilités d'apparition de chaque food
     food_weights = Column(JSON, nullable=False, default=lambda: {
         "apple": 0.55,
         "golden": 0.20,
@@ -30,7 +30,7 @@ class Level(Base):
         "skull": 0.05,
     })
 
-    # Nom/description optionnelle
+    # Nom
     name = Column(String(60), nullable=True)
 
     def __repr__(self):

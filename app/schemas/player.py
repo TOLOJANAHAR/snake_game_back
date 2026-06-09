@@ -15,7 +15,6 @@ class PlayerRead(BaseModel):
 
 
 class PlayerStats(BaseModel):
-    """Stats agrégées d'un joueur."""
     player: PlayerRead
     total_games: int
     best_score: int

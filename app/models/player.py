@@ -11,7 +11,6 @@ class Player(Base):
     username = Column(String(50), unique=True, nullable=False, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relations
     scores = relationship("Score", back_populates="player", cascade="all, delete-orphan")
 
     def __repr__(self):

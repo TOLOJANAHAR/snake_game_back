@@ -1,7 +1,3 @@
-"""
-routers/scores.py
-Endpoints pour soumettre et consulter les scores.
-"""
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -20,14 +16,10 @@ from app.services.game_logic import compute_score, compute_evolution_stage
 router = APIRouter(prefix="/scores", tags=["Scores"])
 
 
-# ─── POST /scores ──────────────────────────────────────────────────────────
+#POST /scores
 
 @router.post("/", response_model=ScoreRead, status_code=status.HTTP_201_CREATED)
 def submit_score(payload: ScoreCreate, db: Session = Depends(get_db)):
-    """
-    Soumet le score d'une partie terminée.
-    Vérifie que le joueur existe, puis persiste le score.
-    """
     player = db.query(Player).filter(Player.id == payload.player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Joueur introuvable.")
@@ -36,7 +28,7 @@ def submit_score(payload: ScoreCreate, db: Session = Depends(get_db)):
     return score
 
 
-# ─── POST /scores/compute ─────────────────────────────────────────────────
+#POST /scores/compute
 
 @router.post("/compute")
 def compute_final_score(
@@ -49,10 +41,6 @@ def compute_final_score(
     duration: float = Query(0.0, ge=0),
     snake_length: int = Query(3, ge=1),
 ):
-    """
-    Calcule le score final à partir des statistiques de partie.
-    Endpoint utilitaire appelé par le frontend en fin de partie.
-    """
     total = compute_score(
         apples_eaten=apples,
         golden_eaten=golden,
@@ -72,7 +60,7 @@ def compute_final_score(
     }
 
 
-# ─── GET /scores/leaderboard ──────────────────────────────────────────────
+#GET /scores/leaderboard
 
 @router.get("/leaderboard", response_model=List[LeaderboardEntry])
 def leaderboard(
@@ -83,7 +71,7 @@ def leaderboard(
     return get_global_leaderboard(db, limit=limit)
 
 
-# ─── GET /scores/{id} ─────────────────────────────────────────────────────
+#GET /scores/{id}
 
 @router.get("/{score_id}", response_model=ScoreRead)
 def get_score(score_id: int, db: Session = Depends(get_db)):
@@ -93,7 +81,7 @@ def get_score(score_id: int, db: Session = Depends(get_db)):
     return score
 
 
-# ─── GET /scores/player/{player_id} ───────────────────────────────────────
+#GET /scores/player/{player_id}
 
 @router.get("/player/{player_id}", response_model=List[ScoreRead])
 def scores_by_player(
@@ -101,7 +89,6 @@ def scores_by_player(
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Retourne l'historique des parties d'un joueur."""
     player = db.query(Player).filter(Player.id == player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Joueur introuvable.")

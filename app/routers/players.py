@@ -1,7 +1,3 @@
-"""
-routers/players.py
-Endpoints CRUD pour les joueurs.
-"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -13,14 +9,11 @@ from app.services.leaderboard import get_player_stats
 router = APIRouter(prefix="/players", tags=["Players"])
 
 
-# ─── POST /players ─────────────────────────────────────────────────────────
+#POST /players
 
 @router.post("/", response_model=PlayerRead, status_code=status.HTTP_201_CREATED)
 def create_player(payload: PlayerCreate, db: Session = Depends(get_db)):
-    """
-    Crée un nouveau joueur.
-    Retourne 409 si le username est déjà pris.
-    """
+
     existing = db.query(Player).filter(Player.username == payload.username).first()
     if existing:
         raise HTTPException(
@@ -34,7 +27,7 @@ def create_player(payload: PlayerCreate, db: Session = Depends(get_db)):
     return player
 
 
-# ─── GET /players/{id} ────────────────────────────────────────────────────
+#GET /players/{id}
 
 @router.get("/{player_id}", response_model=PlayerRead)
 def get_player(player_id: int, db: Session = Depends(get_db)):
@@ -44,7 +37,7 @@ def get_player(player_id: int, db: Session = Depends(get_db)):
     return player
 
 
-# ─── GET /players/username/{username} ─────────────────────────────────────
+#GET /players/username/{username}
 
 @router.get("/username/{username}", response_model=PlayerRead)
 def get_player_by_username(username: str, db: Session = Depends(get_db)):
@@ -55,7 +48,7 @@ def get_player_by_username(username: str, db: Session = Depends(get_db)):
     return player
 
 
-# ─── GET /players/{id}/stats ──────────────────────────────────────────────
+#GET /players/{id}/stats
 
 @router.get("/{player_id}/stats", response_model=PlayerStats)
 def player_stats(player_id: int, db: Session = Depends(get_db)):
@@ -66,7 +59,7 @@ def player_stats(player_id: int, db: Session = Depends(get_db)):
     return stats
 
 
-# ─── DELETE /players/{id} ─────────────────────────────────────────────────
+#DELETE /players/{id
 
 @router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_player(player_id: int, db: Session = Depends(get_db)):

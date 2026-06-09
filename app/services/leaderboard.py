@@ -13,11 +13,9 @@ from app.schemas.player import PlayerStats, PlayerRead
 from app.services.game_logic import compute_evolution_stage
 
 
-# ─── Scores ────────────────────────────────────────────────────────────────
+#Scores
 
 def save_score(db: Session, data: ScoreCreate) -> Score:
-    """Persiste un score en base et retourne l'objet créé."""
-    # Recalcule le stade d'évolution pour être sûr (validation serveur)
     evolution = compute_evolution_stage(data.snake_length)
 
     score = Score(
@@ -49,13 +47,10 @@ def get_scores_by_player(db: Session, player_id: int, limit: int = 20) -> List[S
     )
 
 
-# ─── Leaderboard ───────────────────────────────────────────────────────────
+#Leaderboard
 
 def get_global_leaderboard(db: Session, limit: int = 10) -> List[LeaderboardEntry]:
-    """
-    Retourne les <limit> meilleurs scores de tous les joueurs,
-    enrichis du username.
-    """
+
     rows = (
         db.query(Score, Player.username)
         .join(Player, Score.player_id == Player.id)
@@ -79,7 +74,6 @@ def get_global_leaderboard(db: Session, limit: int = 10) -> List[LeaderboardEntr
 
 
 def get_player_best(db: Session, player_id: int) -> Score | None:
-    """Retourne le meilleur score d'un joueur."""
     return (
         db.query(Score)
         .filter(Score.player_id == player_id)
@@ -88,7 +82,7 @@ def get_player_best(db: Session, player_id: int) -> Score | None:
     )
 
 
-# ─── Stats joueur ──────────────────────────────────────────────────────────
+#Stats joueur
 
 def get_player_stats(db: Session, player_id: int) -> PlayerStats | None:
     player = db.query(Player).filter(Player.id == player_id).first()

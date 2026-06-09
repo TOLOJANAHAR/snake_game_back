@@ -1,14 +1,9 @@
-"""
-level_generator.py
-Génère des obstacles de labyrinthe pour chaque niveau.
-Garantit que la grille reste toujours accessible (BFS de vérification).
-"""
 import random
 from collections import deque
 from typing import List, Dict, Tuple, Any
 
 
-# ─── Constantes par niveau ─────────────────────────────────────────────────
+#Constantes par niveau 
 
 LEVEL_CONFIGS: Dict[int, Dict[str, Any]] = {
     1:  {"obstacle_density": 0.00, "speed_ms": 220, "food_count": 1},
@@ -33,24 +28,19 @@ FOOD_WEIGHTS_BY_LEVEL: Dict[int, Dict[str, float]] = {
 
 GRID_W = 20
 GRID_H = 20
-SNAKE_START = (10, 10)   # position de départ du serpent (milieu de grille)
-SAFE_RADIUS = 3          # zone autour du spawn libre d'obstacles
+SNAKE_START = (10, 10)   
+SAFE_RADIUS = 3        
 
 
-# ─── Helpers ──────────────────────────────────────────────────────────────
+#Helpers
 
 def _is_safe_zone(x: int, y: int) -> bool:
-    """Retourne True si (x,y) est dans la zone de protection autour du spawn."""
     sx, sy = SNAKE_START
     return abs(x - sx) <= SAFE_RADIUS and abs(y - sy) <= SAFE_RADIUS
 
 
 def _is_connected(grid: set, width: int, height: int) -> bool:
-    """
-    BFS depuis (0,0) : vérifie que toutes les cellules libres
-    sont atteignables (grille connexe).
-    """
-    # Cellules libres
+
     free = {
         (x, y)
         for x in range(width)
@@ -79,7 +69,6 @@ def _is_connected(grid: set, width: int, height: int) -> bool:
 
 
 def _get_food_weights(level: int) -> Dict[str, float]:
-    """Retourne les poids de food pour le niveau le plus proche dans la config."""
     milestones = sorted(FOOD_WEIGHTS_BY_LEVEL.keys())
     selected = milestones[0]
     for m in milestones:
@@ -88,7 +77,7 @@ def _get_food_weights(level: int) -> Dict[str, float]:
     return FOOD_WEIGHTS_BY_LEVEL[selected]
 
 
-# ─── Générateur principal ─────────────────────────────────────────────────
+#Générateur principal
 
 def generate_level(
     level_number: int,
@@ -96,24 +85,8 @@ def generate_level(
     height: int = GRID_H,
     seed: int | None = None,
 ) -> Dict[str, Any]:
-    """
-    Génère la configuration complète d'un niveau.
-
-    Retourne un dict compatible avec LevelCreate :
-      {
-        "number": int,
-        "grid_width": int,
-        "grid_height": int,
-        "obstacles": [{"x": int, "y": int}, ...],
-        "base_speed_ms": int,
-        "food_count": int,
-        "food_weights": {...},
-        "name": str,
-      }
-    """
     rng = random.Random(seed)
 
-    # Config de base pour ce niveau (clampe à 10 si > 10)
     cfg_key = min(level_number, 10)
     cfg = LEVEL_CONFIGS.get(cfg_key, LEVEL_CONFIGS[10])
 
@@ -127,18 +100,16 @@ def generate_level(
 
     obstacles: set[Tuple[int, int]] = set()
     attempts = 0
-    max_attempts = target_obstacles * 10  # anti-boucle infinie
+    max_attempts = target_obstacles * 10
 
     while len(obstacles) < target_obstacles and attempts < max_attempts:
         attempts += 1
         x = rng.randint(0, width - 1)
         y = rng.randint(0, height - 1)
 
-        # Protège la zone de spawn
         if _is_safe_zone(x, y):
             continue
 
-        # Teste si l'ajout maintient la connexité
         candidate = obstacles | {(x, y)}
         if _is_connected(candidate, width, height):
             obstacles.add((x, y))
@@ -156,6 +127,4 @@ def generate_level(
 
 
 def get_or_generate(level_number: int) -> Dict[str, Any]:
-    """Raccourci : génère avec un seed fixe basé sur le numéro de niveau
-    (même seed = même labyrinthe à chaque démarrage du serveur)."""
     return generate_level(level_number, seed=level_number * 42)
